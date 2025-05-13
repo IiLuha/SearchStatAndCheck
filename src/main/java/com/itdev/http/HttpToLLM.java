@@ -15,7 +15,7 @@ import java.util.*;
 
 public class HttpToLLM {
 
-    public static String deepseekChatCompletion(String userMessage) {
+    public String deepseekChatCompletion(String userMessage) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(ORDeepseekConfig.DEEPSEEK_API_URL);
 
@@ -50,7 +50,7 @@ public class HttpToLLM {
         return "Ошибка запроса";
     }
 
-    public static String llamaGenerateCompletion(String userMessage) {
+    public String llamaGenerateCompletion(String userMessage) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(LlamaConfig.LLAMA_API_URL);
 

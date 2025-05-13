@@ -1,7 +1,7 @@
 package com.itdev.parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itdev.models.ModelLLM;
+import com.itdev.enums.ModelLLM;
 
 import java.util.List;
 import java.util.Map;
