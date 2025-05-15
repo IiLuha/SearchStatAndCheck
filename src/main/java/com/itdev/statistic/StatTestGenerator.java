@@ -109,4 +109,12 @@ public class StatTestGenerator {
         int numberOfDomain =  (int) (random() * 3);
         return SubjectDomain.values()[numberOfDomain];
     }
+
+    public List<Boolean> generateEqualities(int testQuantity) {
+        List<Boolean> result = new ArrayList<>(testQuantity);
+        for (int i = 0; i < testQuantity; i++) {
+            result.add((int)(Math.random() * 5) == 1);
+        }
+        return result;
+    }
 }

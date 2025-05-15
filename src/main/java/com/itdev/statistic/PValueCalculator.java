@@ -44,7 +44,7 @@ public class PValueCalculator {
     }
 
     public double calculatePValue(TestType type, double testVal, int df1, int df2) {
-        if (type.equals(TestType.F) || type.equals(TestType.Z)) {
+        if (type.equals(TestType.F)) {
             return rStatsCaller.callRPF(testVal, df1, df2);
         } else throw new IllegalArgumentException("F-test must have two degrees of freedom");
     }

@@ -33,6 +33,7 @@ public class GeneratePromptBuilder {
     public String buildPrompt(int testQuantity, SubjectDomain domain) {
         String prompt = String.format(CORE, domain.getName());
         List<StatTest> tests = generator.generateStatTests(testQuantity);
+        List<Boolean> isEqualities = generator.generateEqualities(testQuantity);
         switch (testQuantity) {
             case 0 -> prompt = generatePromptWithoutTests(prompt);
             case 1, 2, 3, 4, 5 -> {
@@ -51,31 +52,29 @@ public class GeneratePromptBuilder {
                             stringBuilder.append("=").append(test.getDf2()).append(", ");
                         }
                     }
-                    boolean isEquality = (int)(Math.random() * 5) == 1;
+                    double p = test.getpValue();
                     if (test.isConsistent()) {
-                        double p = test.getpValue();
-                        if (isEquality) {
-                            stringBuilder.append(String.format("p=%.3f;\n", p));
+                        if (isEqualities.get(i)) {
+                            stringBuilder.append(String.format("p=%.3f;\n", p).replace(',', '.'));
                         } else {
                             if (p < 0.01) {
-                                stringBuilder.append("p < 0.01;\n");
+                                stringBuilder.append("p<0.01;\n");
                             } else if (p < 0.05) {
-                                stringBuilder.append("p < 0.05;\n");
+                                stringBuilder.append("p<0.05;\n");
                             } else {
-                            stringBuilder.append("p > 0.05;\n");
+                            stringBuilder.append("p>0.05;\n");
                             }
                         }
                     } else {
-                        double p = test.getpValue();
-                        if (isEquality) {
-                            stringBuilder.append(String.format("p=%.3f;\n", p + 0.05));
+                        if (isEqualities.get(i)) {
+                            stringBuilder.append(String.format("p=%.3f;\n", p + 0.05).replace(',', '.'));
                         } else {
                             if (p < 0.01) {
-                                stringBuilder.append("p > 0.01;\n");
+                                stringBuilder.append("p>0.01;\n");
                             } else if (p < 0.05) {
-                                stringBuilder.append("p > 0.05;\n");
+                                stringBuilder.append("p>0.05;\n");
                             } else {
-                                stringBuilder.append("p < 0.05;\n");
+                                stringBuilder.append("p<0.05;\n");
                             }
                         }
                     }
