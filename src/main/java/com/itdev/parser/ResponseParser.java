@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ResponseParser {
-    public static String extractGeneratedText(String jsonResponse, ModelLLM model) {
+    public  String extractGeneratedText(String jsonResponse, ModelLLM model) {
         try {
             ObjectMapper mapper = new ObjectMapper();
 
