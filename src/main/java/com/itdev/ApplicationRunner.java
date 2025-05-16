@@ -33,7 +33,7 @@ public class ApplicationRunner {
     public static void main(String[] args) throws IOException {
         ApplicationRunner runner = new ApplicationRunner();
         boolean isArticle = false;
-        ModelLLM model = LLAMA;
+        ModelLLM model = DEEPSEEK;
         if (isArticle){
             System.out.println(runner.searchInArticle(model));
         } else {
@@ -63,7 +63,7 @@ public class ApplicationRunner {
         String response = getLlmResponse(model, SearchPrompt.PROMPT_ALL + excerpt);
         response = parser.extractGeneratedText(response, model) + "\n end";
 
-        return "Response:\n" + response;
+        return "Response search:\n" + response;
     }
 
     private String generateArticle(ModelLLM model) {
@@ -73,7 +73,7 @@ public class ApplicationRunner {
         response = getLlmResponse(model, prompt);
         response = parser.extractGeneratedText(response, model) + "\n end";
 
-        return "Response:\n" + response;
+        return "Response gen:\n" + response;
     }
 
     private String getLlmResponse(ModelLLM model, String prompt) {
