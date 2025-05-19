@@ -1,8 +1,6 @@
-package itdev.statistic;
+package com.itdev.statistic;
 
 import com.itdev.enums.TestType;
-import com.itdev.statistic.PValueCalculator;
-import com.itdev.statistic.RStatsCaller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

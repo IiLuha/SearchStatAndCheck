@@ -1,5 +1,6 @@
 package com.itdev.statistic;
 
+import com.itdev.enums.Environment;
 import com.itdev.enums.SubjectDomain;
 import com.itdev.enums.TestType;
 
@@ -101,8 +102,9 @@ public class StatTestGenerator {
         return (int) (random() * (upperBound - lowerBound)) + lowerBound;
     }
 
-    public int generateTestQuantity() {
-        return  (int) (random() * 6);
+    public int generateTestQuantity(Environment env) {
+        if (env.ordinal() < 3) return (int) (random() * 6);
+        else return (int) (random() * 2 + 1) * 2;
     }
 
     public SubjectDomain generateSubjectDomain() {
@@ -116,5 +118,10 @@ public class StatTestGenerator {
             result.add((int)(Math.random() * 5) == 1);
         }
         return result;
+    }
+
+    public Environment getEnvironment() {
+        Environment[] envs = Environment.values();
+        return envs[(int) (random() * envs.length)];
     }
 }
