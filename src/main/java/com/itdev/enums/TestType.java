@@ -7,7 +7,7 @@ public enum TestType {
             null,
             new Bounds<>(10, 50)
             ),
-    CHI_2("χ2",
+    CHI_2("Chi2",
 
             new Bounds<>(30, 1500),
             null

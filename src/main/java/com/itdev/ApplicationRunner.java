@@ -1,10 +1,13 @@
 package com.itdev;
 
+import com.itdev.enums.Branch;
 import com.itdev.http.HttpToLLM;
 import com.itdev.enums.ModelLLM;
 import com.itdev.parser.ResponseParser;
 import com.itdev.prompt.GeneratePromptBuilder;
 import com.itdev.prompt.SearchPrompt;
+import com.itdev.statistic.RStatcheckCaller;
+import com.itdev.statistic.RStatsCaller;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -13,34 +16,66 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-
-import static com.itdev.enums.ModelLLM.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class ApplicationRunner {
 
     private HttpToLLM http;
     private ResponseParser parser;
+    private RStatcheckCaller statcheckCaller;
 
     public ApplicationRunner() {
-        this(new HttpToLLM(), new ResponseParser());
+        this(new HttpToLLM(), new ResponseParser(), new RStatcheckCaller());
     }
 
-    public ApplicationRunner(HttpToLLM http, ResponseParser parser) {
+    public ApplicationRunner(HttpToLLM http, ResponseParser parser, RStatcheckCaller statcheckCaller) {
         this.http = http;
         this.parser = parser;
+        this.statcheckCaller = statcheckCaller;
     }
 
     public static void main(String[] args) throws IOException {
         ApplicationRunner runner = new ApplicationRunner();
-        boolean isArticle = false;
-        ModelLLM model = DEEPSEEK;
-        if (isArticle){
-            System.out.println(runner.searchInArticle(model));
-        } else {
-            String excerpt = runner.generateArticle(model);
-            System.out.println(excerpt);
-            System.out.println(runner.searchInExcerpt(excerpt, model));
+        ModelLLM model = ModelLLM.valueOf(args[0].toUpperCase(Locale.ROOT));
+        Branch branch = Branch.valueOf(args[1].toUpperCase(Locale.ROOT));
+        switch (branch) {
+            case FROM_PDF -> System.out.println(runner.searchInArticle(model));
+            case FROM_LLM -> {
+                String excerpt = runner.generateArticle(model);
+                System.out.println(excerpt);
+                String answer = runner.searchInExcerpt(excerpt, model);
+                System.out.println(answer);
+                String[] check = runner.runStatcheck(answer);
+                for (String s : check) {
+                    System.out.println(s);
+                }
+            }
+            case GENERATE -> {
+                int nRuns = Integer.parseInt(args[2]);
+                for (int i = 0; i < nRuns; i++) {
+                    String excerpt = runner.generateArticle(model);
+                    System.out.println(excerpt);
+                    String answer = runner.searchInExcerpt(excerpt, model);
+                    System.out.println(answer);
+                    String[] check = runner.runStatcheck(answer);
+                    for (String s : check) {
+                        System.out.println(s);
+                    }
+                }
+            }
         }
+    }
+
+    private String[] runStatcheck(String answer) {
+        String[] mayBeTests = answer.split("\n");
+        List<String> testLines = new ArrayList<>();
+        for (String mayBeTest : mayBeTests) {
+            if (mayBeTest.contains("=")) testLines.add(mayBeTest);
+        }
+        if (testLines.size() == 0) testLines.add("no tests");
+        return statcheckCaller.callStatcheck(testLines);
     }
 
     private String searchInArticle(ModelLLM model) throws IOException {

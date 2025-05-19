@@ -3,7 +3,7 @@ package com.itdev.prompt;
 public class SearchPrompt {
 
     public static final String PROMPT_CHI = """
-            Find the chi-square statistical tests in the text after the colon and present them in APA format (like "χ2 (763, N = 292) = 1467.59, p < .001") (do not write anything else):
+            Find the chi-square statistical tests in the text after the colon and present them in APA format (like "Chi2 (763, N = 292) = 1467.59, p < .001") (do not write anything else):
             """;
 
     public static final String PROMPT_ALL = """

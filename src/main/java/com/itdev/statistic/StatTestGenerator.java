@@ -54,7 +54,7 @@ public class StatTestGenerator {
                     int df2 = getRndValByBounds(type.DF2_BOUND.getUpperBound(), type.DF2_BOUND.getLowerBound());
                     testVal = getTestVal(type, df1, df2);
                     p = calculator.calculatePValue(type, testVal, df1, df2);
-                    tests.add(new StatTest(type, twoTailed, testVal, df1, df2, p, consistent));
+                    tests.add(new StatTest(type, false, testVal, df1, df2, p, consistent));
                 }
             }
         }
