@@ -69,7 +69,7 @@ public class PValueCalculatorTest {
         Assertions.assertThrows(IllegalArgumentException.class,() ->
                 calc.calculatePValue(TestType.R, testVal, true));
         Assertions.assertThrows(IllegalArgumentException.class,() ->
-                calc.calculatePValue(TestType.CHI_2, testVal, true));
+                calc.calculatePValue(TestType.CHI2, testVal, true));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class PValueCalculatorTest {
     @Test
     void returnPIfChi() {
         //given
-        TestType type = TestType.CHI_2;
+        TestType type = TestType.CHI2;
         double testVal = 2.2;
         int df = 28;
         double expected = 0.05;
@@ -232,7 +232,7 @@ public class PValueCalculatorTest {
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> calc.calculatePValue(TestType.Z, testVal, df1, df2));
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> calc.calculatePValue(TestType.CHI_2, testVal, df1, df2));
+                () -> calc.calculatePValue(TestType.CHI2, testVal, df1, df2));
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> calc.calculatePValue(TestType.Q, testVal, df1, df2));
     }

@@ -25,7 +25,8 @@ public class StatTestGenerator {
 
     public List<StatTest> generateStatTests(int testQuantity) {
         ArrayList<StatTest> tests = new ArrayList<>(testQuantity);
-        boolean consistent = (int) (random() * 2) == 1;
+        boolean consistent = (int) (random() * 5) != 1;
+        boolean isEqualities = (int) (random() * 5) == 1;
         for (int i = 0; i < testQuantity; i++) {
             TestType type = TestType.values()[(int) (random() * TestType.values().length)];
             double testVal;
@@ -35,26 +36,26 @@ public class StatTestGenerator {
                 case Z -> {
                     testVal = getTestVal(type);
                     p = calculator.calculatePValue(type, testVal, twoTailed);
-                    tests.add(new StatTest(type, twoTailed, testVal, p, consistent));
+                    tests.add(new StatTest(type, twoTailed, testVal, p, consistent, isEqualities));
                 }
                 case T, R -> {
                     int df2 = getRndValByBounds(type.DF2_BOUND.getUpperBound(), type.DF2_BOUND.getLowerBound());
                     testVal = getTestVal(type, df2);
                     p = calculator.calculatePValue(type, testVal, df2, twoTailed);
-                    tests.add(new StatTest(type, twoTailed, testVal, df2, p, consistent));
+                    tests.add(new StatTest(type, twoTailed, testVal, df2, p, consistent, isEqualities));
                 }
-                case CHI_2, Q -> {
+                case CHI2, Q -> {
                     int df1 = getRndValByBounds(type.DF1_BOUND.getUpperBound(), type.DF1_BOUND.getLowerBound());
                     testVal = getTestVal(type, df1);
                     p = calculator.calculatePValue(type, testVal, df1);
-                    tests.add(new StatTest(type, false, testVal, df1, p, consistent));
+                    tests.add(new StatTest(type, false, testVal, df1, p, consistent, isEqualities));
                 }
                 case F -> {
                     int df1 = getRndValByBounds(type.DF1_BOUND.getUpperBound(), type.DF1_BOUND.getLowerBound());
                     int df2 = getRndValByBounds(type.DF2_BOUND.getUpperBound(), type.DF2_BOUND.getLowerBound());
                     testVal = getTestVal(type, df1, df2);
                     p = calculator.calculatePValue(type, testVal, df1, df2);
-                    tests.add(new StatTest(type, false, testVal, df1, df2, p, consistent));
+                    tests.add(new StatTest(type, false, testVal, df1, df2, p, consistent, isEqualities));
                 }
             }
         }
@@ -80,7 +81,7 @@ public class StatTestGenerator {
         RealDistribution distribution;
         switch (type){
             case T, R -> distribution = new TDistribution(df);
-            case CHI_2, Q -> distribution = new ChiSquaredDistribution(df);
+            case CHI2, Q -> distribution = new ChiSquaredDistribution(df);
             case F, Z -> throw new IllegalArgumentException("Test must have one degrees of freedom");
             default -> throw new IllegalArgumentException("Unknown TestType");
         }
@@ -110,14 +111,6 @@ public class StatTestGenerator {
     public SubjectDomain generateSubjectDomain() {
         int numberOfDomain =  (int) (random() * 3);
         return SubjectDomain.values()[numberOfDomain];
-    }
-
-    public List<Boolean> generateEqualities(int testQuantity) {
-        List<Boolean> result = new ArrayList<>(testQuantity);
-        for (int i = 0; i < testQuantity; i++) {
-            result.add((int)(Math.random() * 5) == 1);
-        }
-        return result;
     }
 
     public Environment getEnvironment() {

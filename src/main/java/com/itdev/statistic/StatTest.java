@@ -12,24 +12,25 @@ public class StatTest {
     private Integer df2;
     private Double pValue;
     private boolean consistent;
+    private boolean isEquality;
 
-    public StatTest(TestType type, boolean oneTailed, Double testValue, Double pValue, boolean consistent) {
-        this(type, oneTailed, testValue, null, pValue, consistent);
+    public StatTest(TestType type, boolean oneTailed, Double testValue, Double pValue, boolean consistent, boolean isEquality) {
+        this(type, oneTailed, testValue, null, pValue, consistent, isEquality);
     }
 
-    public StatTest(TestType type, Double testValue, Integer df2, Double pValue, boolean consistent) {
-        this(type, false, testValue, df2, pValue, consistent);
+    public StatTest(TestType type, Double testValue, Integer df2, Double pValue, boolean consistent, boolean isEquality) {
+        this(type, false, testValue, df2, pValue, consistent, isEquality);
     }
 
-    public StatTest(TestType type, boolean oneTailed, Double testValue, Integer df2, Double pValue, boolean consistent) {
-        this(type, oneTailed, testValue, null, df2, pValue, consistent);
+    public StatTest(TestType type, boolean oneTailed, Double testValue, Integer df2, Double pValue, boolean consistent, boolean isEquality) {
+        this(type, oneTailed, testValue, null, df2, pValue, consistent, isEquality);
     }
 
-    public StatTest(TestType type, Double testValue, Integer df1, Integer df2, Double pValue, boolean consistent) {
-        this(type, false, testValue, df1, df2, pValue, consistent);
+    public StatTest(TestType type, Double testValue, Integer df1, Integer df2, Double pValue, boolean consistent, boolean isEquality) {
+        this(type, false, testValue, df1, df2, pValue, consistent, isEquality);
     }
 
-    public StatTest(TestType type, boolean oneTailed, Double testValue, Integer df1, Integer df2, Double pValue, boolean consistent) {
+    public StatTest(TestType type, boolean oneTailed, Double testValue, Integer df1, Integer df2, Double pValue, boolean consistent, boolean isEquality) {
         this.type = type;
         this.oneTailed = oneTailed;
         this.testValue = testValue;
@@ -37,6 +38,7 @@ public class StatTest {
         this.df2 = df2;
         this.pValue = pValue;
         this.consistent = consistent;
+        this.isEquality = isEquality;
     }
 
     @Override
@@ -92,11 +94,11 @@ public class StatTest {
         this.df2 = df2;
     }
 
-    public Double getpValue() {
+    public Double getPValue() {
         return pValue;
     }
 
-    public void setpValue(Double pValue) {
+    public void setPValue(Double pValue) {
         this.pValue = pValue;
     }
 
@@ -104,15 +106,21 @@ public class StatTest {
         return consistent;
     }
 
+    public boolean isEquality() {
+        return isEquality;
+    }
+
     @Override
     public String toString() {
         return "StatTest{" +
-                "testType=" + type +
-                ", " + (oneTailed ? "twoTailed" : "oneTailed") +
+                "type=" + type +
+                ", oneTailed=" + oneTailed +
                 ", testValue=" + testValue +
                 ", df1=" + df1 +
                 ", df2=" + df2 +
-                ", p-value=" + pValue +
+                ", pValue=" + pValue +
+                ", consistent=" + consistent +
+                ", isEqualities=" + isEquality +
                 '}';
     }
 }
