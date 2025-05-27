@@ -36,7 +36,7 @@ public class PValueCalculator {
                 p = rStatsCaller.callRPT(arg, df);
                 if (twoTailed) p *= 2;
             }
-            case CHI_2, Q -> p = rStatsCaller.callRPChiSq(testVal, df);
+            case CHI2, Q -> p = rStatsCaller.callRPChiSq(testVal, df);
             case F, Z -> throw new IllegalArgumentException("Test must have one degrees of freedom");
             default -> throw new IllegalArgumentException("Unknown TestType");
         }
