@@ -25,8 +25,8 @@ public enum TestType {
             new Bounds<>(10, 50)
     ),
     Q("Q",
-            new Bounds<>(30, 1500),
-            null
+            null,
+            new Bounds<>(30, 1500)
     );
 
     public final String NAME;

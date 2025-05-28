@@ -25,7 +25,7 @@ public class RStatcheckCaller {
         this.parser = parser;
     }
 
-    public List<StatcheckResult> callStatcheck(List<String> testLines) {
+    public List<StatcheckResultDO> callStatcheck(List<String> testLines) {
         return callRStatcheck(testLines);
     }
 
@@ -48,7 +48,7 @@ public class RStatcheckCaller {
         return rCode;
     }
 
-    private List<StatcheckResult> callRStatcheck(List<String> testLines) {
+    private List<StatcheckResultDO> callRStatcheck(List<String> testLines) {
         RCaller caller = RCaller.create();
         RCode code = scriptBuild(testLines);
 
@@ -57,11 +57,11 @@ public class RStatcheckCaller {
 
         System.out.println("\nStatcheck xml:\n");
 
-        try {
-            System.out.println(caller.getParser().getXMLFileAsString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            System.out.println(caller.getParser().getXMLFileAsString());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         return parser.parseResult(caller);
     }

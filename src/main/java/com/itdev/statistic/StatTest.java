@@ -2,35 +2,36 @@ package com.itdev.statistic;
 
 import com.itdev.enums.TestType;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 public class StatTest {
     private TestType type;
     private boolean oneTailed;
-    private Double testValue;
+    private BigDecimal testValue;
     private Integer df1;
     private Integer df2;
-    private Double pValue;
+    private BigDecimal pValue;
     private boolean consistent;
     private boolean isEquality;
 
-    public StatTest(TestType type, boolean oneTailed, Double testValue, Double pValue, boolean consistent, boolean isEquality) {
+    public StatTest(TestType type, boolean oneTailed, BigDecimal testValue, BigDecimal pValue, boolean consistent, boolean isEquality) {
         this(type, oneTailed, testValue, null, pValue, consistent, isEquality);
     }
 
-    public StatTest(TestType type, Double testValue, Integer df2, Double pValue, boolean consistent, boolean isEquality) {
+    public StatTest(TestType type, BigDecimal testValue, Integer df2, BigDecimal pValue, boolean consistent, boolean isEquality) {
         this(type, false, testValue, df2, pValue, consistent, isEquality);
     }
 
-    public StatTest(TestType type, boolean oneTailed, Double testValue, Integer df2, Double pValue, boolean consistent, boolean isEquality) {
+    public StatTest(TestType type, boolean oneTailed, BigDecimal testValue, Integer df2, BigDecimal pValue, boolean consistent, boolean isEquality) {
         this(type, oneTailed, testValue, null, df2, pValue, consistent, isEquality);
     }
 
-    public StatTest(TestType type, Double testValue, Integer df1, Integer df2, Double pValue, boolean consistent, boolean isEquality) {
+    public StatTest(TestType type, BigDecimal testValue, Integer df1, Integer df2, BigDecimal pValue, boolean consistent, boolean isEquality) {
         this(type, false, testValue, df1, df2, pValue, consistent, isEquality);
     }
 
-    public StatTest(TestType type, boolean oneTailed, Double testValue, Integer df1, Integer df2, Double pValue, boolean consistent, boolean isEquality) {
+    public StatTest(TestType type, boolean oneTailed, BigDecimal testValue, Integer df1, Integer df2, BigDecimal pValue, boolean consistent, boolean isEquality) {
         this.type = type;
         this.oneTailed = oneTailed;
         this.testValue = testValue;
@@ -70,11 +71,11 @@ public class StatTest {
         this.oneTailed = oneTailed;
     }
 
-    public Double getTestValue() {
+    public BigDecimal getTestValue() {
         return testValue;
     }
 
-    public void setTestValue(Double testValue) {
+    public void setTestValue(BigDecimal testValue) {
         this.testValue = testValue;
     }
 
@@ -94,11 +95,11 @@ public class StatTest {
         this.df2 = df2;
     }
 
-    public Double getPValue() {
+    public BigDecimal getPValue() {
         return pValue;
     }
 
-    public void setPValue(Double pValue) {
+    public void setPValue(BigDecimal pValue) {
         this.pValue = pValue;
     }
 

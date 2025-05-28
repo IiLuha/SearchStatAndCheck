@@ -1,0 +1,166 @@
+databaseChangeLog:
+  - changeSet:
+      id: creating-result-table
+      author: ITDev
+      changes:
+        - createTable:
+            tableName: result
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: number_from_app
+                  type: integer
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: valid
+                  type: boolean
+                  constraints:
+                    nullable: false
+                    default: true
+              - column:
+                  name: subject_domain
+                  type: varchar(50)
+              - column:
+                  name: environment
+                  type: varchar(50)
+              - column:
+                  name: gen_prompt
+                  type: varchar(1000)
+              - column:
+                  name: gen_answer
+                  type: varchar(1000)
+              - column:
+                  name: search_answer
+                  type: varchar(1000)
+  - changeSet:
+      id: creating-true_test-table
+      author: ITDev
+      changes:
+        - createTable:
+            tableName: true_test
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(50)
+              - column:
+                  name: one_tailed
+                  type: boolean
+                  constraints:
+                    nullable: false
+                    default: false
+              - column:
+                  name: test_value
+                  type: numeric(19, 4)
+              - column:
+                  name: df1
+                  type: integer
+              - column:
+                  name: df2
+                  type: integer
+              - column:
+                  name: p_value
+                  type: numeric(19, 10)
+              - column:
+                  name: consistent
+                  type: boolean
+              - column:
+                  name: is_equality
+                  type: boolean
+              - column:
+                  name: result_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: true_test
+            baseColumnNames: result_id
+            constraintName: fk_true_test_result
+            referencedTableName: result
+            referencedColumnNames: id
+            onDelete: CASCADE
+  - changeSet:
+      id: creating-statcheck_result-table
+      author: ITDev
+      changes:
+        - createTable:
+            tableName: statcheck_result
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: after_proc
+                  type: boolean
+                  constraints:
+                    nullable: false
+                    default: false
+                  remarks: "after processing LLM"
+              - column:
+                  name: source
+                  type: varchar(255)
+              - column:
+                  name: type
+                  type: varchar(50)
+              - column:
+                  name: df1
+                  type: integer
+              - column:
+                  name: df2
+                  type: integer
+              - column:
+                  name: test_value
+                  type: numeric(19, 4)
+              - column:
+                  name: p_comparison
+                  type: varchar(2)
+              - column:
+                  name: reported_p
+                  type: numeric(19, 10)
+              - column:
+                  name: computed_p
+                  type: numeric(19, 10)
+              - column:
+                  name: error
+                  type: boolean
+              - column:
+                  name: decision_error
+                  type: boolean
+              - column:
+                  name: one_tailed
+                  type: boolean
+              - column:
+                  name: apa_factor
+                  type: integer
+              - column:
+                  name: result_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: statcheck_result
+            baseColumnNames: result_id
+            constraintName: fk_statcheck_result_result
+            referencedTableName: result
+            referencedColumnNames: id
+            onDelete: CASCADE

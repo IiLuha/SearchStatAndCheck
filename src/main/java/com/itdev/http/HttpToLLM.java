@@ -58,7 +58,8 @@ public class HttpToLLM {
 
             // Тело запроса в JSON
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", LlamaConfig.LLAMA_MODEL);
+            requestBody.put("model", LlamaConfig.LLAMA_MODEL_3_1);
+//            requestBody.put("model", LlamaConfig.LLAMA_MODEL_3_2);
             requestBody.put("prompt", userMessage);
             requestBody.put("stream", false);
 

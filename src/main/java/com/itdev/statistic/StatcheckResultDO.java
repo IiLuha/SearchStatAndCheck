@@ -1,26 +1,27 @@
 package com.itdev.statistic;
 
-import com.itdev.enums.TestType;
+import java.math.BigDecimal;
 
 /**
  * Класс для хранения результатов statcheck (NHST-тесты).
  * Пример строки из statcheck: "t(24) = 2.34, p = .03"
+ * StatcheckResultDataObject
  */
-public class StatcheckResult {
+public class StatcheckResultDO {
     private String source;       // Номер теста в статье
     private String type;    // Тип теста
     private Integer df1;  // Первая степень свободы (если есть)
     private Integer df2;  // Вторая степень свободы (для F-теста, может быть null)
-    private double testValue;    // Значение статистики (2.34)
+    private BigDecimal testValue;    // Значение статистики (2.34)
     private String pComparison;  // Оператор сравнения p (=, <, >)
-    private double reportedP;    // Заявленное p-значение (0.03)
-    private double computedP;    // Заявленное p-значение (0.03)
+    private BigDecimal reportedP;    // Заявленное p-значение (0.03)
+    private BigDecimal computedP;    // Заявленное p-значение (0.03)
     private boolean error;       //
     private boolean decision_error;       //
-    private boolean one_tailed;       //
+    private boolean oneTailed;       //
     private int apaFactor;
 
-    public StatcheckResult() {
+    public StatcheckResultDO() {
     }
 
     @Override
@@ -36,7 +37,7 @@ public class StatcheckResult {
                 ", computedP=" + computedP +
                 ", error=" + error +
                 ", decision_error=" + decision_error +
-                ", one_tailed=" + one_tailed +
+                ", one_tailed=" + oneTailed +
                 ", apaFactor=" + apaFactor +
                 '}';
     }
@@ -73,11 +74,11 @@ public class StatcheckResult {
         this.df2 = df2;
     }
 
-    public double getTestValue() {
+    public BigDecimal getTestValue() {
         return testValue;
     }
 
-    public void setTestValue(double testValue) {
+    public void setTestValue(BigDecimal testValue) {
         this.testValue = testValue;
     }
 
@@ -89,11 +90,11 @@ public class StatcheckResult {
         this.pComparison = pComparison;
     }
 
-    public double getReportedP() {
+    public BigDecimal getReportedP() {
         return reportedP;
     }
 
-    public void setReportedP(double reportedP) {
+    public void setReportedP(BigDecimal reportedP) {
         this.reportedP = reportedP;
     }
 
@@ -114,11 +115,11 @@ public class StatcheckResult {
     }
 
     public boolean isOneTailed() {
-        return one_tailed;
+        return oneTailed;
     }
 
-    public void setOne_tailed(boolean one_tailed) {
-        this.one_tailed = one_tailed;
+    public void setOneTailed(boolean oneTailed) {
+        this.oneTailed = oneTailed;
     }
 
     public int getApaFactor() {
@@ -129,11 +130,11 @@ public class StatcheckResult {
         this.apaFactor = apaFactor;
     }
 
-    public double getComputedP() {
+    public BigDecimal getComputedP() {
         return computedP;
     }
 
-    public void setComputedP(double computedP) {
+    public void setComputedP(BigDecimal computedP) {
         this.computedP = computedP;
     }
 }

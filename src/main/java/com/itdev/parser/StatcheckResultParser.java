@@ -2,15 +2,17 @@ package com.itdev.parser;
 
 import com.github.rcaller.exception.ParseException;
 import com.github.rcaller.rstuff.RCaller;
-import com.itdev.statistic.StatcheckResult;
+import com.itdev.statistic.StatcheckResultDO;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 public class StatcheckResultParser {
 
-    public List<StatcheckResult> parseResult(RCaller caller) {
-        List<StatcheckResult> results = new ArrayList<>();
+    public List<StatcheckResultDO> parseResult(RCaller caller) {
+        List<StatcheckResultDO> results = new ArrayList<>();
 
         // Получаем сырые данные из R
         String[] sources;
@@ -35,18 +37,18 @@ public class StatcheckResultParser {
 
         // Маппим в Java-объекты
         for (int i = 0; i < testTypes.length; i++) {
-            StatcheckResult result = new StatcheckResult();
+            StatcheckResultDO result = new StatcheckResultDO();
             result.setSource(sources[i]);
             result.setType(testTypes[i]);
             result.setDf1(df1s[i]);
             result.setDf2(df2s[i]);
-            result.setTestValue(testValues[i]);
+            result.setTestValue(new BigDecimal(String.valueOf(testValues[i])).setScale(3, RoundingMode.HALF_UP));
             result.setPComparison(pComparisons[i]);
-            result.setReportedP(reportedPs[i]);
-            result.setComputedP(computedPs[i]);
+            result.setReportedP(new BigDecimal(String.valueOf(reportedPs[i])).setScale(3, RoundingMode.HALF_UP));
+            result.setComputedP(new BigDecimal(String.valueOf(computedPs[i])).setScale(3, RoundingMode.HALF_UP));
             result.setError(errors[i]);
             result.setDecision_error(decisionErrors[i]);
-            result.setOne_tailed(one_tailed[i]);
+            result.setOneTailed(one_tailed[i]);
 
             results.add(result);
         }
