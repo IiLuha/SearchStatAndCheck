@@ -1,7 +1,7 @@
 package com.itdev.http;
 
+import com.itdev.http.config.DeepseekConfig;
 import com.itdev.http.config.LlamaConfig;
-import com.itdev.http.config.ORDeepseekConfig;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -10,23 +10,23 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component
 public class HttpToLLM {
 
     public String deepseekChatCompletion(String userMessage) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            HttpPost httpPost = new HttpPost(ORDeepseekConfig.DEEPSEEK_API_URL);
-
-            // Заголовки
-            httpPost.setHeader("Authorization", "Bearer " + ORDeepseekConfig.DEEPSEEK_API_KEY);
+            Map<String, Object> requestBody = new HashMap<>();
+            HttpPost httpPost;
+            httpPost = new HttpPost(DeepseekConfig.DEEPSEEK_API_URL);
             httpPost.setHeader("Content-Type", "application/json");
+            httpPost.setHeader("Authorization", "Bearer " + DeepseekConfig.DEEPSEEK_API_KEY);
+            requestBody.put("model", DeepseekConfig.DEEPSEEK_MODEL);
 
             // Тело запроса в JSON
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", ORDeepseekConfig.DEEPSEEK_MODEL);
-
             List<Map<String, String>> messages = new ArrayList<>();
             messages.add(Map.of("role", "user", "content", userMessage));
             requestBody.put("messages", messages);
@@ -35,7 +35,7 @@ public class HttpToLLM {
             ObjectMapper mapper = new ObjectMapper();
             String jsonBody = mapper.writeValueAsString(requestBody);
 
-            httpPost.setEntity(new StringEntity(jsonBody));
+            httpPost.setEntity(new StringEntity(jsonBody, "UTF-8"));
 
             // Отправка запроса
             try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
@@ -50,15 +50,13 @@ public class HttpToLLM {
         return "Ошибка запроса";
     }
 
-    public String llamaGenerateCompletion(String userMessage) {
+    public String llamaGenerate(String userMessage) {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(LlamaConfig.LLAMA_API_URL);
 
-//            httpPost.setHeader("Content-Type", "application/json");
-
             // Тело запроса в JSON
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", LlamaConfig.LLAMA_MODEL);
+            requestBody.put("model", LlamaConfig.LLAMA_MODEL_3_1);
             requestBody.put("prompt", userMessage);
             requestBody.put("stream", false);
 

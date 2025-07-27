@@ -1,26 +1,28 @@
-package com.itdev.statistic;
+package com.itdev.statistics;
 
 import com.itdev.enums.Environment;
 import com.itdev.enums.SubjectDomain;
 import com.itdev.enums.TestType;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.distribution.*;
+import org.springframework.stereotype.Component;
 
 import static java.lang.Math.*;
 
+@Component
+@RequiredArgsConstructor
 public class StatTestGenerator {
 
-    private PValueCalculator calculator;
+    private final PValueCalculator pValueCalculator;
 
     public StatTestGenerator() {
         this(new PValueCalculator());
-    }
-
-    public StatTestGenerator(PValueCalculator calculator) {
-        this.calculator = calculator;
     }
 
     public List<StatTest> generateStatTests(int testQuantity) {
@@ -29,32 +31,32 @@ public class StatTestGenerator {
         boolean isEqualities = (int) (random() * 5) == 1;
         for (int i = 0; i < testQuantity; i++) {
             TestType type = TestType.values()[(int) (random() * TestType.values().length)];
-            double testVal;
-            double p;
+            BigDecimal testVal;
+            BigDecimal p;
             boolean twoTailed = (int) (random() * 2) == 1;
             switch (type) {
                 case Z -> {
-                    testVal = getTestVal(type);
-                    p = calculator.calculatePValue(type, testVal, twoTailed);
+                    testVal = new BigDecimal(String.valueOf(getTestVal(type))).setScale(3, RoundingMode.HALF_UP);
+                    p = new BigDecimal(String.valueOf(pValueCalculator.calculatePValue(type, testVal.doubleValue(), twoTailed))).setScale(3, RoundingMode.HALF_UP);
                     tests.add(new StatTest(type, twoTailed, testVal, p, consistent, isEqualities));
                 }
-                case T, R -> {
+                case T, R, Q -> {
                     int df2 = getRndValByBounds(type.DF2_BOUND.getUpperBound(), type.DF2_BOUND.getLowerBound());
-                    testVal = getTestVal(type, df2);
-                    p = calculator.calculatePValue(type, testVal, df2, twoTailed);
+                    testVal = new BigDecimal(String.valueOf(getTestVal(type, df2))).setScale(3, RoundingMode.HALF_UP);
+                    p = new BigDecimal(String.valueOf(pValueCalculator.calculatePValue(type, testVal.doubleValue(), df2, twoTailed))).setScale(3, RoundingMode.HALF_UP);
                     tests.add(new StatTest(type, twoTailed, testVal, df2, p, consistent, isEqualities));
                 }
-                case CHI2, Q -> {
+                case CHI2 -> {
                     int df1 = getRndValByBounds(type.DF1_BOUND.getUpperBound(), type.DF1_BOUND.getLowerBound());
-                    testVal = getTestVal(type, df1);
-                    p = calculator.calculatePValue(type, testVal, df1);
+                    testVal = new BigDecimal(String.valueOf(getTestVal(type, df1))).setScale(3, RoundingMode.HALF_UP);
+                    p = new BigDecimal(String.valueOf(pValueCalculator.calculatePValue(type, testVal.doubleValue(), df1))).setScale(3, RoundingMode.HALF_UP);
                     tests.add(new StatTest(type, false, testVal, df1, p, consistent, isEqualities));
                 }
                 case F -> {
                     int df1 = getRndValByBounds(type.DF1_BOUND.getUpperBound(), type.DF1_BOUND.getLowerBound());
                     int df2 = getRndValByBounds(type.DF2_BOUND.getUpperBound(), type.DF2_BOUND.getLowerBound());
-                    testVal = getTestVal(type, df1, df2);
-                    p = calculator.calculatePValue(type, testVal, df1, df2);
+                    testVal = new BigDecimal(String.valueOf(getTestVal(type, df1, df2))).setScale(3, RoundingMode.HALF_UP);
+                    p = new BigDecimal(String.valueOf(pValueCalculator.calculatePValue(type, testVal.doubleValue(), df1, df2))).setScale(3, RoundingMode.HALF_UP);
                     tests.add(new StatTest(type, false, testVal, df1, df2, p, consistent, isEqualities));
                 }
             }
@@ -93,10 +95,6 @@ public class StatTestGenerator {
             testVal = rVal;
         }
         return testVal;
-    }
-
-    private double getRndValByBounds(double upperBound, double lowerBound) {
-        return random() * (upperBound - lowerBound) + lowerBound;
     }
 
     private int getRndValByBounds(int upperBound, int lowerBound) {

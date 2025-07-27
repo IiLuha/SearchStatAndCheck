@@ -1,10 +1,12 @@
-package com.itdev.statistic;
+package com.itdev.statistics.rcaller;
 
 import com.github.rcaller.rstuff.RCaller;
 import com.github.rcaller.rstuff.RCode;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class RStatsCaller {
 
     private static final String HEAD = "p <- stats::%s(test_stat";

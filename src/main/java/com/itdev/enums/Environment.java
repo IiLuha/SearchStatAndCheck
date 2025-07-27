@@ -7,7 +7,7 @@ public enum Environment {
             "df1 = 28, df2 = 44, f = 2.20, p = 0.03"),
     TEXT("text",
             "A f-test showed a statistically significant result with a f(28, 44) value of 2.20. " +
-                    "The p-value was less than 0.05."),
+                    "The p-value was less than 0.05"),
     TABLE("table",
             """
                     someValue one-tailed test df1 df2 p
@@ -20,7 +20,7 @@ public enum Environment {
             " df1 = 28 and 30, df2 = 44, f = 2.20 and one-tailed t = 2.4, p = 0.03 and 0.05"),
     TWO_TEXT("text",
             "The f-test and one-tailed t-test showed a statistically significant result with a " +
-                    "f(28, 44) and p(30) value of 2.20 and 2.4. The p-value was less than 0.05 for them both.");
+                    "f(28, 44) and p(30) value of 2.20 and 2.4. The p-value was less than 0.05 for them both");
 
     public final String NAME;
     public final String EXAMPLE;
