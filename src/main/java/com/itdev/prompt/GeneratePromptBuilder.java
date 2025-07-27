@@ -2,77 +2,114 @@ package com.itdev.prompt;
 
 import com.itdev.enums.SubjectDomain;
 import com.itdev.enums.TestType;
-import com.itdev.statiatic.StatTest;
+import com.itdev.enums.Environment;
+import com.itdev.statistics.StatTest;
+import com.itdev.statistics.StatTestGenerator;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
 
-import static java.lang.Math.random;
-
+@Component
+@RequiredArgsConstructor
 public class GeneratePromptBuilder {
-    private static final String CORE = "1.\tYou are an expert in %s who desperately needs " +
+    private static final String CORE_DIF = "Imagine that you are an expert in %s who desperately needs " +
             "money for your mother's cancer treatment. A large company will pay you $1B if you" +
-            " write an excerpt of the article of 3000 tokens";
-    private static final String REMAIN_TEST_NUMBER_AND_VALUES = ", which will contain %d statistical %s-tests:\n";
-    private static final String REMAIN_DEGREES_OF_FREEDOM = "; degrees of freedom: ";
-    private static final String REMAIN_P_VALUE = " and p-value written in the form";
+            " write a good excerpt of the scientific article of 3000 tokens";
+    private static final String CORE = "Imagine that you are an expert in %s. Write a good excerpt of the scientific article of 3000 tokens";
+    private static final String REMAIN_TEST_NUMBER_AND_TYPE = ", which will contain %d statistical tests:\n";
+    private static final String FIRST_TEST_EXAMPLE = "f=2.2, df1=28, df2=44 p=0.03";
+    private static final String ONE_EXAMPLE_TEXT = "\nFor example (do not insert next example in excerpt, use only the format for writing previous tests in the excerpt), the test \n%s\nshould be written in the %s like:\n";
+    private static final String SECOND_TEST_EXAMPLE = "one-tailed t=2.4, df=30, p=0.04";
+    private static final String TWO_EXAMPLE_TEXT = "\nFor example (do not insert next examples in the excerpt, use only the format for writing previous tests in the excerpt), the tests \n%s\n%s\nshould be written in the %s like:\n";
+    private static final String NOT_DUPLICATE = "\nDo not write the same test two or more times (only one time)\n";
+    private static final String NOT_USE_APA = "\nDo not use APA-style for writing tests.";
+    private static final String TAIL = "\nDo not write anything else. If you can't, tell me why.";
+    private static final BigDecimal ALPHA_0_01 = new BigDecimal("0.01");
+    private static final BigDecimal ALPHA_0_05 = new BigDecimal("0.05");
 
-    public String buildGeneratePrompt() {
-        int numberOfTests = (int) (random() * 6);
-        int numberOfDomain = (int) (random() * 3);
-        SubjectDomain domain = SubjectDomain.values()[numberOfDomain];
-        String prompt = String.format(CORE, domain.name());
-        List<StatTest> tests = generateStatTests(numberOfTests);
-        switch (numberOfTests) {
+    private final StatTestGenerator generator;
+
+    public GeneratePromptBuilder() {
+        this(new StatTestGenerator());
+    }
+
+    public String buildPrompt(List<StatTest> tests, SubjectDomain domain, Environment env) {
+        int testQuantity = tests.size();
+        String prompt = String.format(CORE, domain.getName());
+        switch (testQuantity) {
             case 0 -> prompt = generatePromptWithoutTests(prompt);
             case 1, 2, 3, 4, 5 -> {
-                TestType type = tests.get(0).getType();
-                prompt = prompt.concat(String.format(REMAIN_TEST_NUMBER_AND_VALUES, numberOfTests, type.name()));
+                prompt = prompt.concat(String.format(REMAIN_TEST_NUMBER_AND_TYPE, testQuantity));
                 StringBuilder stringBuilder = new StringBuilder();
-                for (int i = 0; i < numberOfTests; i++) {
-                    StatTest test = tests.get(i);
-                    stringBuilder.append(type.name()).append("=").append(test.getTestValue()).append(", ");
+                for (StatTest statTest : tests) {
+                    TestType type = statTest.getType();
+                    if ((type == TestType.T || type == TestType.Z || type == TestType.R) && statTest.isOneTailed()) {
+                        stringBuilder.append("one-tailed ");
+                    }
+                    stringBuilder.append(type.NAME).append("=");
+                    stringBuilder.append(statTest.getTestValue().toPlainString().replace(',', '.'))
+                            .append(", ");
                     switch (type) {
-                        case T, R, CHI, F -> {
-                            if (type == TestType.F) stringBuilder.append("df1=").append(test.getDf1()).append(", ");
+                        case T, R, CHI2, F, Q -> {
+                            if (type == TestType.F) stringBuilder.append("df1=").append(statTest.getDf1()).append(", ");
                             stringBuilder.append("df");
                             if (type == TestType.F) stringBuilder.append("2");
-                            stringBuilder.append("=").append(test.getDf2()).append(", ");
+                            stringBuilder.append("=").append(statTest.getDf2()).append(", ");
                         }
                     }
-                    stringBuilder.append("p=").append(test.getpValue()).append(";\n");
+                    BigDecimal p = statTest.getPValue();
+                    if (statTest.isConsistent()) {
+                        if (statTest.isEquality()) {
+                            stringBuilder.append("p=")
+                                    .append(p.toPlainString().replace(',', '.'))
+                                    .append("\n");
+                        } else {
+                            if (p.compareTo(ALPHA_0_01) < 0) {
+                                stringBuilder.append("p<0.01;\n");
+                            } else if (p.compareTo(ALPHA_0_05) < 0) {
+                                stringBuilder.append("p<0.05;\n");
+                            } else {
+                                stringBuilder.append("p>0.05;\n");
+                            }
+                        }
+                    } else {
+                        if (statTest.isEquality()) {
+                            stringBuilder.append("p=")
+                                    .append(p.add(ALPHA_0_05).toPlainString().replace(',', '.'))
+                                    .append("\n");
+                        } else {
+                            if (p.compareTo(ALPHA_0_01) < 0) {
+                                stringBuilder.append("p>0.01;\n");
+                            } else if (p.compareTo(ALPHA_0_05) < 0) {
+                                stringBuilder.append("p>0.05;\n");
+                            } else {
+                                stringBuilder.append("p<0.05;\n");
+                            }
+                        }
+                    }
                 }
+                stringBuilder.append(NOT_DUPLICATE);
                 prompt += stringBuilder;
+                prompt += buildExample(env);
+                if (!(env.equals(Environment.APA) || env.equals(Environment.TWO_APA))) prompt += NOT_USE_APA;
+                prompt += TAIL;
             }
-            default -> throw new IllegalArgumentException("numberOfTests must be from 0 to 5, but is "+numberOfTests);
         }
+        System.out.println(prompt);
         return prompt;
     }
 
-    private List<StatTest> generateStatTests(int numberOfTests) {
-        ArrayList<StatTest> tests = new ArrayList<>(numberOfTests);
-        for (int i = 0; i < numberOfTests; i++) {
-            TestType type = TestType.values()[(int) (random() * TestType.values().length)];
-            double testVal = random() * (type.TEST_BOUND.getUpperBound() - type.TEST_BOUND.getLowerBound()) + type.TEST_BOUND.getLowerBound();
-            double p = random();
-            boolean twoTailed = (int) (random() * 2) == 1;
-            switch (type) {
-                case Z, Q -> tests.add(new StatTest(type, twoTailed, testVal, p));
-                case T, R, CHI -> {
-                    int df2 = (int) (random() * (type.DF2_BOUND.getUpperBound() - type.DF2_BOUND.getLowerBound())) + type.DF2_BOUND.getLowerBound();
-                    tests.add(new StatTest(type, twoTailed, testVal, df2, p));
-                }
-                case F -> {
-                    int df1 = (int) (random() * (type.DF1_BOUND.getUpperBound() - type.DF1_BOUND.getLowerBound())) + type.DF1_BOUND.getLowerBound();
-                    int df2 = (int) (random() * (type.DF2_BOUND.getUpperBound() - type.DF2_BOUND.getLowerBound())) + type.DF2_BOUND.getLowerBound();
-                    tests.add(new StatTest(type, twoTailed, testVal, df1, df2, p));
-                }
-            }
-        }
-        return tests;
+    private String buildExample(Environment env) {
+        boolean singleTest = env.ordinal() < 3;
+        String tail = singleTest ? String.format(ONE_EXAMPLE_TEXT, FIRST_TEST_EXAMPLE, env.NAME) :
+                String.format(TWO_EXAMPLE_TEXT, FIRST_TEST_EXAMPLE, SECOND_TEST_EXAMPLE, env.NAME);
+        tail += env.EXAMPLE;
+        return tail;
     }
 
     private String generatePromptWithoutTests(String prompt) {
-        return prompt;
+        return prompt + ". Do not insert any statistical test in text";
     }
 }
