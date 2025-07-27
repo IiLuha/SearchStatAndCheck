@@ -11,9 +11,11 @@ import lombok.ToString;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@EqualsAndHashCode(of = "numberFromApp")
+@EqualsAndHashCode(exclude = {"trueTests", "statcheckResults"})
 @ToString(exclude = {"trueTests", "statcheckResults"})
 @Data
 @AllArgsConstructor
@@ -33,8 +35,7 @@ public class Result implements BaseEntity<Integer>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private Integer numberFromApp;
-    private boolean valid;
+    private Boolean valid;
     @Enumerated(EnumType.STRING)
     private SubjectDomain subjectDomain;
     @Enumerated(EnumType.STRING)
@@ -42,6 +43,7 @@ public class Result implements BaseEntity<Integer>{
     private String genPrompt;
     private String genAnswer;
     private String searchAnswer;
+    private String resultTable;
 
     @OneToMany(mappedBy = "result", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

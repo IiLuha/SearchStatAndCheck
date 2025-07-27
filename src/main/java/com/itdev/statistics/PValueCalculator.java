@@ -1,19 +1,20 @@
-package com.itdev.statistic;
+package com.itdev.statistics;
 
 import com.itdev.enums.TestType;
+import com.itdev.statistics.rcaller.RStatsCaller;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import static java.lang.Math.*;
 
+@Component
+@RequiredArgsConstructor
 public class PValueCalculator {
 
-    private RStatsCaller rStatsCaller;
+    private final RStatsCaller rStatsCaller;
 
     public PValueCalculator() {
         this(new RStatsCaller());
-    }
-
-    public PValueCalculator(RStatsCaller rStatsCaller) {
-        this.rStatsCaller = rStatsCaller;
     }
 
     public double calculatePValue(TestType type, double testVal, boolean twoTailed) {

@@ -14,12 +14,6 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: number_from_app
-                  type: integer
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
                   name: valid
                   type: boolean
                   constraints:
@@ -33,13 +27,16 @@ databaseChangeLog:
                   type: varchar(50)
               - column:
                   name: gen_prompt
-                  type: varchar(1000)
+                  type: text
               - column:
                   name: gen_answer
-                  type: varchar(1000)
+                  type: text
               - column:
                   name: search_answer
-                  type: varchar(1000)
+                  type: text
+              - column:
+                  name: result_table
+                  type: text
   - changeSet:
       id: creating-true_test-table
       author: ITDev
@@ -79,7 +76,7 @@ databaseChangeLog:
                   name: consistent
                   type: boolean
               - column:
-                  name: is_equality
+                  name: equality
                   type: boolean
               - column:
                   name: result_id

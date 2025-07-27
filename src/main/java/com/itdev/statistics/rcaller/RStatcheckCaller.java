@@ -1,12 +1,18 @@
-package com.itdev.statistic;
+package com.itdev.statistics.rcaller;
 
+import com.github.rcaller.exception.ExecutionException;
 import com.github.rcaller.rstuff.RCaller;
 import com.github.rcaller.rstuff.RCode;
+import com.itdev.exception.StatcheckException;
 import com.itdev.parser.StatcheckResultParser;
+import com.itdev.statistics.StatcheckResultDO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.List;
 
+@Component
+@RequiredArgsConstructor
 public class RStatcheckCaller {
 
     private static final String HEAD = "library(\"statcheck\")\nstat <- statcheck(c(";
@@ -15,18 +21,20 @@ public class RStatcheckCaller {
     private static final String MID_TXT = TXT + ", ";
     private static final String ONE_TEST_CALL = "library(\"statcheck\")\nstat <- statcheck(txt1)";
 
-    private StatcheckResultParser parser;
+    private final StatcheckResultParser parser;
 
-    public RStatcheckCaller() {
-        this(new StatcheckResultParser());
-    }
-
-    public RStatcheckCaller(StatcheckResultParser parser) {
-        this.parser = parser;
-    }
-
-    public List<StatcheckResultDO> callStatcheck(List<String> testLines) {
-        return callRStatcheck(testLines);
+    public List<StatcheckResultDO> callStatcheck(List<String> testLines) throws StatcheckException {
+        List<String> editedLines = testLines.stream()
+//                .peek(System.out::println)
+                .map(test -> test.replace("\\", "\\\\"))
+                .map(test -> test.replace("'", "\\'"))
+                .map(test -> test.replace("\"", "\\\""))
+                .map(test -> test.replace("\n", " "))
+                .map(test -> test.replace("\r", ""))
+                .map(test -> test.replace("#", ""))
+//                .peek(System.out::println)
+                .toList();
+        return callRStatcheck(editedLines);
     }
 
     private RCode scriptBuild(List<String> testLines) {
@@ -48,20 +56,16 @@ public class RStatcheckCaller {
         return rCode;
     }
 
-    private List<StatcheckResultDO> callRStatcheck(List<String> testLines) {
+    private List<StatcheckResultDO> callRStatcheck(List<String> testLines) throws StatcheckException {
         RCaller caller = RCaller.create();
         RCode code = scriptBuild(testLines);
 
         caller.setRCode(code);
-        caller.runAndReturnResult("stat");
-
-        System.out.println("\nStatcheck xml:\n");
-
-//        try {
-//            System.out.println(caller.getParser().getXMLFileAsString());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            caller.runAndReturnResult("stat");
+        } catch (ExecutionException e) {
+            throw new StatcheckException(e.getMessage());
+        }
 
         return parser.parseResult(caller);
     }

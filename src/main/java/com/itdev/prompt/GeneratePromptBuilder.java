@@ -3,12 +3,16 @@ package com.itdev.prompt;
 import com.itdev.enums.SubjectDomain;
 import com.itdev.enums.TestType;
 import com.itdev.enums.Environment;
-import com.itdev.statistic.StatTest;
-import com.itdev.statistic.StatTestGenerator;
+import com.itdev.statistics.StatTest;
+import com.itdev.statistics.StatTestGenerator;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Component
+@RequiredArgsConstructor
 public class GeneratePromptBuilder {
     private static final String CORE_DIF = "Imagine that you are an expert in %s who desperately needs " +
             "money for your mother's cancer treatment. A large company will pay you $1B if you" +
@@ -25,40 +29,10 @@ public class GeneratePromptBuilder {
     private static final BigDecimal ALPHA_0_01 = new BigDecimal("0.01");
     private static final BigDecimal ALPHA_0_05 = new BigDecimal("0.05");
 
-    private StatTestGenerator generator;
+    private final StatTestGenerator generator;
 
     public GeneratePromptBuilder() {
         this(new StatTestGenerator());
-    }
-
-    public GeneratePromptBuilder(StatTestGenerator generator) {
-        this.generator = generator;
-    }
-
-    public String buildRandomPrompt() {
-        Environment env = generator.getEnvironment();
-        return buildRandomPrompt(env);
-    }
-
-    public String buildRandomPrompt(int testQuantity) {
-        Environment env = generator.getEnvironment();
-        return buildRandomPrompt(env, testQuantity);
-    }
-
-    public String buildRandomPrompt(Environment env, int testQuantity) {
-        List<StatTest> tests = generator.generateStatTests(testQuantity);
-        return buildRandomPrompt(env, tests);
-    }
-
-    public String buildRandomPrompt(Environment env) {
-        int testQuantity = generator.generateTestQuantity(env);
-        List<StatTest> tests = generator.generateStatTests(testQuantity);
-        return buildRandomPrompt(env, tests);
-    }
-
-    public String buildRandomPrompt(Environment env, List<StatTest> tests) {
-        SubjectDomain domain = generator.generateSubjectDomain();
-        return buildPrompt(tests, domain, env);
     }
 
     public String buildPrompt(List<StatTest> tests, SubjectDomain domain, Environment env) {
@@ -67,8 +41,6 @@ public class GeneratePromptBuilder {
         switch (testQuantity) {
             case 0 -> prompt = generatePromptWithoutTests(prompt);
             case 1, 2, 3, 4, 5 -> {
-//                TestType type = tests.get(0).getType();
-//                prompt = prompt.concat(String.format(REMAIN_TEST_NUMBER_AND_TYPE, testQuantity, type.NAME));
                 prompt = prompt.concat(String.format(REMAIN_TEST_NUMBER_AND_TYPE, testQuantity));
                 StringBuilder stringBuilder = new StringBuilder();
                 for (StatTest statTest : tests) {
@@ -125,7 +97,7 @@ public class GeneratePromptBuilder {
                 prompt += TAIL;
             }
         }
-        System.out.println(prompt + "\n\n");
+        System.out.println(prompt);
         return prompt;
     }
 

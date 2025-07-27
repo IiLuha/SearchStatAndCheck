@@ -20,7 +20,7 @@ public class ResultMapper implements Mapper<Result, Result>{
     }
 
     private void copy(Result fromObject, Result toObject) {
-        toObject.setValid(fromObject.isValid());
+        toObject.setValid(fromObject.getValid());
         toObject.setSubjectDomain(fromObject.getSubjectDomain());
         toObject.setEnvironment(fromObject.getEnvironment());
         toObject.setGenPrompt(fromObject.getGenPrompt());

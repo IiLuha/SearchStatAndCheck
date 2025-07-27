@@ -1,5 +1,5 @@
 package com.itdev.enums;
 
 public enum ModelLLM {
-    DEEPSEEK, LLAMA, DUMMY
+    DEEPSEEK, ORDEEPSEEK/*Open Router*/, LLAMA, DUMMY
 }

@@ -25,7 +25,7 @@ public class StatcheckResultMapper implements Mapper<StatcheckResult, StatcheckR
     }
 
     private void copy(StatcheckResult fromObject, StatcheckResult toObject) {
-        toObject.setAfterProc(fromObject.isAfterProc());
+        toObject.setAfterProc(fromObject.getAfterProc());
         toObject.setSource(fromObject.getSource());
         toObject.setType(fromObject.getType());
         toObject.setDf1(fromObject.getDf1());
@@ -34,9 +34,9 @@ public class StatcheckResultMapper implements Mapper<StatcheckResult, StatcheckR
         toObject.setPComparison(fromObject.getPComparison());
         toObject.setReportedP(fromObject.getReportedP());
         toObject.setComputedP(fromObject.getComputedP());
-        toObject.setError(fromObject.isError());
-        toObject.setDecision_error(fromObject.isDecision_error());
-        toObject.setOneTailed(fromObject.isOneTailed());
+        toObject.setError(fromObject.getError());
+        toObject.setDecisionError(fromObject.getDecisionError());
+        toObject.setOneTailed(fromObject.getOneTailed());
         toObject.setApaFactor(fromObject.getApaFactor());
         if (fromObject.getResult() != null) {
             toObject.setResult(resultRepository.findById(fromObject.getResult().getId()).orElseThrow());

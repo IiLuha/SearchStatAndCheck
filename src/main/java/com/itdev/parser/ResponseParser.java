@@ -2,20 +2,25 @@ package com.itdev.parser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itdev.enums.ModelLLM;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class ResponseParser {
+
     public  String extractGeneratedText(String jsonResponse, ModelLLM model) {
         try {
             ObjectMapper mapper = new ObjectMapper();
+
+//            System.out.println("jsonResp:\n"+jsonResponse+"\n");
 
             // 1. Парсим JSON в Map
             Map<String, Object> responseMap = mapper.readValue(jsonResponse, Map.class);
 
             switch (model) {
-                case DEEPSEEK -> {
+                case DEEPSEEK, ORDEEPSEEK -> {
                     // 2. Достаём список choices
                     List<Map<String, Object>> choices = (List<Map<String, Object>>) responseMap.get("choices");
 
@@ -39,6 +44,7 @@ public class ResponseParser {
             }
         } catch (Exception e) {
             e.printStackTrace();
+//            System.err.println("Response: " + jsonResponse);
             return "Ошибка парсинга: " + e.getMessage();
         }
     }

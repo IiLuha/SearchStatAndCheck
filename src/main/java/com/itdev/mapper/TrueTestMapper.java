@@ -26,13 +26,13 @@ public class TrueTestMapper implements Mapper<TrueTest, TrueTest>{
 
     private void copy(TrueTest fromObject, TrueTest toObject) {
         toObject.setType(fromObject.getType());
-        toObject.setOneTailed(fromObject.isOneTailed());
+        toObject.setOneTailed(fromObject.getOneTailed());
         toObject.setTestValue(fromObject.getTestValue());
         toObject.setDf1(fromObject.getDf1());
         toObject.setDf2(fromObject.getDf2());
         toObject.setPValue(fromObject.getPValue());
-        toObject.setConsistent(fromObject.isConsistent());
-        toObject.setEquality(fromObject.isEquality());
+        toObject.setConsistent(fromObject.getConsistent());
+        toObject.setEquality(fromObject.getEquality());
         if (fromObject.getResult() != null) {
             toObject.setResult(resultRepository.findById(fromObject.getResult().getId()).orElseThrow());
         }

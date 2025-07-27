@@ -8,13 +8,13 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of = {"afterProc", "type", "df1", "df2", "testValue"})
 @ToString(exclude = {"result"})
 @Builder
 public class StatcheckResult implements BaseEntity<Integer> {
@@ -38,7 +38,7 @@ public class StatcheckResult implements BaseEntity<Integer> {
 //    @JoinColumn(name = "result_id")
     private Result result;
 
-    private boolean afterProc; // after processing LLM
+    private Boolean afterProc; // after processing LLM
     private String source;
     @Enumerated(EnumType.STRING)
     private TestType type;
@@ -46,10 +46,12 @@ public class StatcheckResult implements BaseEntity<Integer> {
     private Integer df2;
     private BigDecimal testValue;
     private String pComparison;
+    @Column(name = "reported_p")
     private BigDecimal reportedP;
+    @Column(name = "computed_p")
     private BigDecimal computedP;
-    private boolean error;
-    private boolean decision_error;
-    private boolean oneTailed;
-    private int apaFactor;
+    private Boolean error;
+    private Boolean decisionError;
+    private Boolean oneTailed;
+    private Integer apaFactor;
 }

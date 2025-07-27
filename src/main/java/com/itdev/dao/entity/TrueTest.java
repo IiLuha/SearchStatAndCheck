@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"result"})
 @ToString(exclude = {"result"})
 @Builder
 public class TrueTest implements BaseEntity<Integer> {
@@ -36,11 +36,11 @@ public class TrueTest implements BaseEntity<Integer> {
 
     @Enumerated(EnumType.STRING)
     private TestType type;
-    private boolean oneTailed;
+    private Boolean oneTailed;
     private BigDecimal testValue;
     private Integer df1;
     private Integer df2;
     private BigDecimal pValue;
-    private boolean consistent;
-    private boolean isEquality;
+    private Boolean consistent;
+    private Boolean equality;
 }

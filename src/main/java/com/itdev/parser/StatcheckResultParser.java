@@ -2,16 +2,19 @@ package com.itdev.parser;
 
 import com.github.rcaller.exception.ParseException;
 import com.github.rcaller.rstuff.RCaller;
-import com.itdev.statistic.StatcheckResultDO;
+import com.itdev.exception.StatcheckException;
+import com.itdev.statistics.StatcheckResultDO;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class StatcheckResultParser {
 
-    public List<StatcheckResultDO> parseResult(RCaller caller) {
+    public List<StatcheckResultDO> parseResult(RCaller caller) throws StatcheckException {
         List<StatcheckResultDO> results = new ArrayList<>();
 
         // Получаем сырые данные из R
@@ -19,18 +22,21 @@ public class StatcheckResultParser {
         try {
             sources = caller.getParser().getAsStringArray("source");
         } catch (ParseException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return results;
         }
         String[] testTypes = caller.getParser().getAsStringArray("test_type");
+        String[] pComparisons = caller.getParser().getAsStringArray("p_comp");
         String[] df1sAsString = caller.getParser().getAsStringArray("df1");
         String[] df2sAsString = caller.getParser().getAsStringArray("df2");
         Integer[] df1s = getDfs(df1sAsString);
         Integer[] df2s = getDfs(df2sAsString);
-        double[] testValues = caller.getParser().getAsDoubleArray("test_value");
-        String[] pComparisons = caller.getParser().getAsStringArray("p_comp");
-        double[] reportedPs = caller.getParser().getAsDoubleArray("reported_p");
-        double[] computedPs = caller.getParser().getAsDoubleArray("computed_p");
+        String[] testValuesAsString = caller.getParser().getAsStringArray("test_value");
+        String[] reportedPsAsString = caller.getParser().getAsStringArray("reported_p");
+        String[] computedPsAsString = caller.getParser().getAsStringArray("computed_p");
+        Double[] testValues = getDouble(testValuesAsString);
+        Double[] reportedPs = getDouble(reportedPsAsString);
+        Double[] computedPs = getDouble(computedPsAsString);
         boolean[] errors = caller.getParser().getAsLogicalArray("error");
         boolean[] decisionErrors = caller.getParser().getAsLogicalArray("decision_error");
         boolean[] one_tailed = caller.getParser().getAsLogicalArray("one_tailed_in_txt");
@@ -53,6 +59,19 @@ public class StatcheckResultParser {
             results.add(result);
         }
         return results;
+    }
+
+    private Double[] getDouble(String[] testValuesAsString) throws StatcheckException {
+        Double[] dfs = new Double[testValuesAsString.length];
+        for (int i = 0; i < testValuesAsString.length; i++) {
+            String dfAsString = testValuesAsString[i];
+            try {
+                dfs[i] = Double.parseDouble(dfAsString);
+            } catch (NumberFormatException e) {
+                throw new StatcheckException(e.getMessage());
+            }
+        }
+        return dfs;
     }
 
     private Integer[] getDfs(String[] dfsAsString) {

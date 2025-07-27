@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/stats_repository
+    url: jdbc:postgresql://localhost:5432/stats_repository2
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -12,4 +12,4 @@ spring:
 
 logging:
   level:
-    root: info
+    root: error

@@ -29,8 +29,34 @@ public class ResultService {
         return resultRepository.findAllByEnvironment(environment);
     }
 
+    public List<Result> findAllByEnvironmentWithLists(Environment environment) {
+        List<Result> allByEnvironment = resultRepository.findAllByEnvironment(environment);
+        final Integer n = -1;
+        System.out.println("begin");
+        allByEnvironment.forEach(result -> {
+            n.compareTo(result.getTrueTests().size());
+        });
+        System.out.println("end");
+        return allByEnvironment;
+    }
+
+    public List<Result> findAllByValid(Boolean valid) {
+        return resultRepository.findAllByValid(valid);
+    }
+
     public List<Result> findAll() {
         return resultRepository.findAll();
+    }
+
+    public List<Result> findAllWithLists() {
+        List<Result> all = resultRepository.findAll();
+        final Integer n = -1;
+        System.out.println("begin");
+        all.forEach(result -> {
+            n.compareTo(result.getTrueTests().size());
+        });
+        System.out.println("end");
+        return all;
     }
 
     public Optional<Result> findById(Integer id) {
@@ -38,8 +64,8 @@ public class ResultService {
     }
 
     @Transactional
-    public Result create(Result userDto) {
-        return Optional.of(userDto)
+    public Result create(Result result) {
+        return Optional.of(result)
                 .map(resultRepository::save)
                 .orElseThrow();
     }
